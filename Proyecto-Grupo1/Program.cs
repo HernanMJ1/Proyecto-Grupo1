@@ -1,5 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Proyecto_Grupo1.Data;
 namespace Proyecto_Grupo1
 {
+
+
+
     public class Program
     {
         public static void Main(string[] args)
@@ -8,6 +13,8 @@ namespace Proyecto_Grupo1
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -31,6 +38,8 @@ namespace Proyecto_Grupo1
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+
         }
     }
 }
