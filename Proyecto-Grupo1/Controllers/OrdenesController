@@ -1,0 +1,107 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Proyecto_Grupo1.Models;
+using Proyecto_Grupo1.ViewModels;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Proyecto_Grupo1.Controllers
+{
+    public class OrdenesController : Controller
+    {
+        // Cambia "TuDbContext" por el nombre real de tu DbContext en la carpeta Data
+        private readonly ApplicationDbContext _context;
+
+        public OrdenesController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: /Ordenes/DiagnosticarYCotizar/1
+        [HttpGet]
+        public async Task<IActionResult> DiagnosticarYCotizar(int id = 1)
+        {
+            var existente = await _context.DiagnosticosOrden
+                .Include(d => d.CostosEstimados)
+                .FirstOrDefaultAsync(d => d.OrdenId == id);
+
+            var vm = new DiagnosticoCostosViewModel
+            {
+                OrdenId = id
+            };
+
+            if (existente != null)
+            {
+                vm.DiagnosticoTecnico = existente.DiagnosticoTecnico;
+                vm.Observaciones = existente.Observaciones;
+                vm.CostoManoObra = existente.CostoManoObra;
+                vm.Repuestos = existente.CostosEstimados.Select(c => new CostoItemInput
+                {
+                    Concepto = c.Concepto,
+                    Cantidad = c.Cantidad,
+                    PrecioUnitario = c.PrecioUnitario
+                }).ToList();
+            }
+
+            return View(vm);
+        }
+
+        // POST: /Ordenes/DiagnosticarYCotizar
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DiagnosticarYCotizar(DiagnosticoCostosViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            var diagnostico = await _context.DiagnosticosOrden
+                .Include(d => d.CostosEstimados)
+                .FirstOrDefaultAsync(d => d.OrdenId == vm.OrdenId);
+
+            if (diagnostico == null)
+            {
+                diagnostico = new DiagnosticoOrden
+                {
+                    OrdenId = vm.OrdenId
+                };
+                _context.DiagnosticosOrden.Add(diagnostico);
+            }
+            else
+            {
+                _context.CostosEstimadosItems.RemoveRange(diagnostico.CostosEstimados);
+            }
+
+            diagnostico.DiagnosticoTecnico = vm.DiagnosticoTecnico.Trim();
+            diagnostico.Observaciones = string.IsNullOrWhiteSpace(vm.Observaciones) ? null : vm.Observaciones.Trim();
+            diagnostico.CostoManoObra = vm.CostoManoObra;
+            diagnostico.FechaRegistro = DateTime.Now;
+
+            decimal sumaRepuestos = 0;
+
+            foreach (var item in vm.Repuestos ?? Enumerable.Empty<CostoItemInput>())
+            {
+                if (!string.IsNullOrWhiteSpace(item.Concepto) && item.Cantidad > 0 && item.PrecioUnitario >= 0)
+                {
+                    var nuevoItem = new CostoEstimadoItem
+                    {
+                        Concepto = item.Concepto.Trim(),
+                        Cantidad = item.Cantidad,
+                        PrecioUnitario = item.PrecioUnitario
+                    };
+                    diagnostico.CostosEstimados.Add(nuevoItem);
+                    sumaRepuestos += item.Cantidad * item.PrecioUnitario;
+                }
+            }
+
+            diagnostico.TotalEstimado = diagnostico.CostoManoObra + sumaRepuestos;
+
+            await _context.SaveChangesAsync();
+
+            TempData["GuardadoExito"] = "Diagnóstico y costos estimados registrados correctamente.";
+            return RedirectToAction(nameof(DiagnosticarYCotizar), new { id = vm.OrdenId });
+        }
+    }
+}
