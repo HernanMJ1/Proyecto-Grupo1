@@ -24,6 +24,8 @@ namespace Proyecto_Grupo1.Data
         public DbSet<MovimientoInventario> MovimientosInventario { get; set; }
         public DbSet<Factura> Facturas { get; set; }
         public DbSet<Pago> Pagos { get; set; }
+        public DbSet<DiagnosticoOrden> DiagnosticosOrden { get; set; }
+        public DbSet<CostoEstimadoItem> CostosEstimadosItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
