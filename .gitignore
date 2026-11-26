@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Repo-local agent instruction files (local only, not for commit)
+AGENTS.md

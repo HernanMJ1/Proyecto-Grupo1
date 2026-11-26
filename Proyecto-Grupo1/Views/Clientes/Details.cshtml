@@ -1,0 +1,131 @@
+@model Proyecto_Grupo1.Models.Cliente
+@{
+    ViewData["Title"] = "Detalle del cliente";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Cliente #@Model.IdCliente</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+    </div>
+
+    @if (TempData["GuardadoExito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["GuardadoExito"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Datos del cliente</strong>
+            <span class="badge @(Model.Estado ? "bg-success" : "bg-secondary")">
+                @(Model.Estado ? "Activo" : "Inactivo")
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Nombre</div>
+                <div class="col-md-9">@Model.Nombre</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Identidad</div>
+                <div class="col-md-9">@Model.Identidad</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Teléfono</div>
+                <div class="col-md-9">@Model.Telefono</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Correo electrónico</div>
+                <div class="col-md-9">@(Model.Correo ?? "—")</div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 fw-bold">Dirección</div>
+                <div class="col-md-9">@(Model.Direccion ?? "—")</div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <a asp-action="Edit" asp-route-id="@Model.IdCliente" class="btn btn-outline-primary">Editar</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><strong>Equipos registrados</strong></div>
+        <div class="card-body">
+            @if (Model.Equipos.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 60px;">ID</th>
+                                <th>Tipo</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>N.º de serie</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var equipo in Model.Equipos)
+                            {
+                                <tr>
+                                    <td>@equipo.IdEquipo</td>
+                                    <td>@equipo.Tipo</td>
+                                    <td>@equipo.Marca</td>
+                                    <td>@equipo.Modelo</td>
+                                    <td>@equipo.NumSerie</td>
+                                    <td>@(equipo.Descripcion ?? "—")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Este cliente no tiene equipos registrados.</p>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><strong>Historial de órdenes de servicio</strong></div>
+        <div class="card-body">
+            @if (Model.OrdenesServicio.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>N.º Orden</th>
+                                <th>Fecha ingreso</th>
+                                <th>Equipo</th>
+                                <th>Problema reportado</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var orden in Model.OrdenesServicio)
+                            {
+                                <tr>
+                                    <td>@orden.NumeroOrden</td>
+                                    <td>@orden.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                                    <td>@(orden.Equipo != null ? $"{orden.Equipo.Marca} {orden.Equipo.Modelo}" : "—")</td>
+                                    <td>@orden.ProblemaReportado</td>
+                                    <td><span class="badge bg-info text-dark">@orden.Estado</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">Este cliente no tiene órdenes de servicio registradas.</p>
+            }
+        </div>
+    </div>
+</div>
