@@ -1,0 +1,31 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace Proyecto_Grupo1.ViewModels
+{
+    public class DiagnosticoCostosViewModel
+    {
+        public int OrdenId { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar el diagnóstico técnico.")]
+        [Display(Name = "Diagnóstico Técnico")]
+        public string DiagnosticoTecnico { get; set; } = string.Empty;
+
+        [Display(Name = "Observaciones / Riesgos")]
+        public string? Observaciones { get; set; }
+
+        [Required]
+        [Range(0, 999999, ErrorMessage = "Ingrese un monto válido para mano de obra.")]
+        [Display(Name = "Costo de Mano de Obra")]
+        public decimal CostoManoObra { get; set; }
+
+        public List<CostoItemInput> Repuestos { get; set; } = new List<CostoItemInput>();
+    }
+
+    public class CostoItemInput
+    {
+        public string Concepto { get; set; } = string.Empty;
+        public int Cantidad { get; set; } = 1;
+        public decimal PrecioUnitario { get; set; }
+    }
+}
