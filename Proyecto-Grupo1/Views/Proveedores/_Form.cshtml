@@ -1,0 +1,8 @@
+@model Proveedor
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<div class="row g-3">
+    <div class="col-md-7"><label asp-for="Nombre" class="form-label">Nombre</label><input asp-for="Nombre" class="form-control" /><span asp-validation-for="Nombre" class="text-danger"></span></div>
+    <div class="col-md-5"><label asp-for="Telefono" class="form-label">Teléfono</label><input asp-for="Telefono" class="form-control" /><span asp-validation-for="Telefono" class="text-danger"></span></div>
+    <div class="col-md-6"><label asp-for="Correo" class="form-label">Correo electrónico</label><input asp-for="Correo" type="email" class="form-control" /><span asp-validation-for="Correo" class="text-danger"></span></div>
+    <div class="col-md-6"><label asp-for="Direccion" class="form-label">Dirección</label><input asp-for="Direccion" class="form-control" /><span asp-validation-for="Direccion" class="text-danger"></span></div>
+</div>
