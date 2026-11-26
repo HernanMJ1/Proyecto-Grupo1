@@ -64,6 +64,34 @@ namespace Proyecto_Grupo1.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("Proyecto_Grupo1.Models.CostoEstimadoItem", b =>
+                {
+                    b.Property<int>("CostoEstimadoItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CostoEstimadoItemId"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Concepto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiagnosticoId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("CostoEstimadoItemId");
+
+                    b.HasIndex("DiagnosticoId");
+
+                    b.ToTable("CostosEstimadosItems");
+                });
+
             modelBuilder.Entity("Proyecto_Grupo1.Models.DetalleRepuesto", b =>
                 {
                     b.Property<int>("IdDetalleRep")
@@ -164,6 +192,38 @@ namespace Proyecto_Grupo1.Migrations
                     b.HasIndex("IdTecnico");
 
                     b.ToTable("Diagnosticos");
+                });
+
+            modelBuilder.Entity("Proyecto_Grupo1.Models.DiagnosticoOrden", b =>
+                {
+                    b.Property<int>("DiagnosticoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiagnosticoId"));
+
+                    b.Property<decimal>("CostoManoObra")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DiagnosticoTecnico")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrdenId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalEstimado")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("DiagnosticoId");
+
+                    b.ToTable("DiagnosticosOrden");
                 });
 
             modelBuilder.Entity("Proyecto_Grupo1.Models.Empleado", b =>
@@ -589,6 +649,17 @@ namespace Proyecto_Grupo1.Migrations
                     b.ToTable("Servicios");
                 });
 
+            modelBuilder.Entity("Proyecto_Grupo1.Models.CostoEstimadoItem", b =>
+                {
+                    b.HasOne("Proyecto_Grupo1.Models.DiagnosticoOrden", "Diagnostico")
+                        .WithMany("CostosEstimados")
+                        .HasForeignKey("DiagnosticoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Diagnostico");
+                });
+
             modelBuilder.Entity("Proyecto_Grupo1.Models.DetalleRepuesto", b =>
                 {
                     b.HasOne("Proyecto_Grupo1.Models.OrdenServicio", "OrdenServicio")
@@ -758,6 +829,11 @@ namespace Proyecto_Grupo1.Migrations
                     b.Navigation("Equipos");
 
                     b.Navigation("OrdenesServicio");
+                });
+
+            modelBuilder.Entity("Proyecto_Grupo1.Models.DiagnosticoOrden", b =>
+                {
+                    b.Navigation("CostosEstimados");
                 });
 
             modelBuilder.Entity("Proyecto_Grupo1.Models.Empleado", b =>

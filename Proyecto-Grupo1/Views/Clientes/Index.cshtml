@@ -1,0 +1,100 @@
+@model IEnumerable<Proyecto_Grupo1.Models.Cliente>
+@{
+    ViewData["Title"] = "Clientes";
+    var busqueda = ViewData["Busqueda"] as string;
+    var estadoActual = ViewData["Estado"] as bool?;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Clientes</h2>
+        <a asp-action="Create" class="btn btn-primary">+ Nuevo cliente</a>
+    </div>
+
+    @if (TempData["GuardadoExito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["GuardadoExito"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label for="busqueda" class="form-label">Buscar</label>
+                    <input id="busqueda" name="busqueda" value="@busqueda" class="form-control"
+                           placeholder="Nombre, identidad o teléfono" />
+                </div>
+                <div class="col-md-3">
+                    <label for="estado" class="form-label">Estado</label>
+                    <select id="estado" name="estado" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="true" selected="@(estadoActual == true ? "selected" : null)">Activos</option>
+                        <option value="false" selected="@(estadoActual == false ? "selected" : null)">Inactivos</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>Nombre</th>
+                    <th>Identidad</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th style="width: 90px;">Estado</th>
+                    <th style="width: 290px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdCliente</td>
+                        <td>@item.Nombre</td>
+                        <td>@item.Identidad</td>
+                        <td>@item.Telefono</td>
+                        <td>@(item.Correo ?? "—")</td>
+                        <td>
+                            <span class="badge @(item.Estado ? "bg-success" : "bg-secondary")">
+                                @(item.Estado ? "Activo" : "Inactivo")
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <a asp-action="Edit" asp-route-id="@item.IdCliente"
+                                   class="btn btn-outline-primary btn-sm">Editar</a>
+                                <a asp-action="Details" asp-route-id="@item.IdCliente"
+                                   class="btn btn-outline-secondary btn-sm">Equipos</a>
+                                <form asp-action="CambiarEstado" asp-route-id="@item.IdCliente"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('¿Desea @(item.Estado ? "desactivar" : "activar") este cliente?');">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="btn @(item.Estado ? "btn-outline-danger" : "btn-outline-success") btn-sm">
+                                        @(item.Estado ? "Desactivar" : "Activar")
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted">No se encontraron clientes con los filtros seleccionados.</p>
+    }
+</div>

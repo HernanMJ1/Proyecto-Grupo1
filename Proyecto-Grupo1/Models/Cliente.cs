@@ -17,13 +17,16 @@ namespace Proyecto_Grupo1.Models
 
         [Required]
         [StringLength(30)]
+        [Display(Name = "Teléfono")]
         public string Telefono { get; set; } = string.Empty;
 
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Ingrese un correo electrónico válido.")]
         [StringLength(160)]
+        [Display(Name = "Correo electrónico")]
         public string? Correo { get; set; }
 
         [StringLength(250)]
+        [Display(Name = "Dirección")]
         public string? Direccion { get; set; }
 
         public bool Estado { get; set; } = true;
